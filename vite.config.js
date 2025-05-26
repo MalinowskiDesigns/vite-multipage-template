@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
 import { createHtmlPlugin } from 'vite-plugin-html';
+import checker from 'vite-plugin-checker'; // ← tu!
+import eslintPlugin from 'vite-plugin-eslint';
 
 // 1. Automatyczne wykrycie stron z katalogu src/pages/
 const pageDirs = fs
@@ -52,6 +54,11 @@ export default defineConfig({
 	plugins: [
 		createHtmlPlugin({
 			pages,
+		}),
+		checker({
+			eslintPlugin: {
+				lintCommand: 'eslint "./src/**/*.js"', // lub './src/**/*.{js,vue,ts}'
+			},
 		}),
 	],
 });
