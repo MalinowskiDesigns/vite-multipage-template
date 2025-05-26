@@ -1,6 +1,7 @@
 {
-	"title": "O nas | MalinowskiDesigns",
-	"description": "Poznaj naszą historię, misję i wartości.",
-	"keywords": "o nas, zespół, firma, wartości",
-	"og_image": "/assets/images/about-og.jpg"
+	"title": "O nas",
+	"desc": "Dowiedz się, kim jesteśmy i co robimy – o projekcie Vite Vanilla Template.",
+	"keywords": "o nas, vite, vanilla js, multipage",
+	"url": "https://twojadomena.pl/about.html",
+	"og_image": "https://twojadomena.pl/assets/og/about.webp"
 }

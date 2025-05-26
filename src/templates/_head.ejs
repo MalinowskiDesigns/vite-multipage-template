@@ -1,14 +1,85 @@
 <head>
 	<meta charset="UTF-8" />
+	<title>Vite Vanilla Template | <%= title %></title>
+	<meta name="description" content="<%= desc %>" />
+	<meta name="keywords" content="<%= keywords %>" />
+	<meta name="robots" content="index, follow" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title><%= meta.title %></title>
-	<meta name="description" content="<%= meta.description %>" />
-	<meta name="keywords" content="<%= meta.keywords %>" />
-	<meta property="og:title" content="<%= meta.title %>" />
-	<meta property="og:description" content="<%= meta.description %>" />
-	<% if (meta.og_image) { %>
-	<meta property="og:image" content="<%= meta.og_image %>" />
-	<% } %>
-	<link rel="icon" href="/favicon.ico" />
-	<link rel="stylesheet" href="/src/styles/main.scss" />
+	<meta name="author" content="YourNameOrCompany" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- Canonical & theme -->
+	<link rel="canonical" href="<%= url %>" />
+	<meta name="theme-color" content="#040413" />
+
+	<!-- Open Graph -->
+	<meta property="og:url" content="<%= url %>" />
+	<meta property="og:title" content="Vite Vanilla Template | <%= title %>" />
+	<meta property="og:description" content="<%= desc %>" />
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content="<%= og_image %>" />
+	<meta property="og:site_name" content="Vite Vanilla Template" />
+	<meta property="og:locale" content="pl_PL" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Grafika podglądu strony" />
+
+	<!-- Microsoft Tiles -->
+	<meta name="msapplication-TileColor" content="#f9f9f9" />
+	<meta name="msapplication-TileImage" content="/icons/mstile-144x144.png" />
+	<meta name="msapplication-config" content="/browserconfig.xml" />
+	<meta name="application-name" content="Vite Vanilla Template" />
+
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:domain" content="<%= domainUrl %>" />
+	<meta name="twitter:url" content="<%= url %>" />
+	<meta name="twitter:title" content="Vite Vanilla Template | <%= title %>" />
+	<meta name="twitter:description" content="<%= desc %>" />
+	<meta name="twitter:image" content="<%= og_image %>" />
+
+	<!-- PWA & mobile -->
+	<link rel="manifest" href="/manifest.webmanifest" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="apple-mobile-web-app-title" content="Vite Vanilla Template" />
+	<meta
+		name="apple-mobile-web-app-status-bar-style"
+		content="black-translucent"
+	/>
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="google" content="notranslate" />
+
+	<!-- Favicon & Icons -->
+	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+	<link
+		rel="icon"
+		type="image/png"
+		sizes="16x16"
+		href="/icons/favicon-16x16.png"
+	/>
+	<link
+		rel="icon"
+		type="image/png"
+		sizes="32x32"
+		href="/icons/favicon-32x32.png"
+	/>
+	<link
+		rel="apple-touch-icon"
+		sizes="180x180"
+		href="/icons/apple-touch-icon-180x180.png"
+	/>
+	<link rel="yandex-tableau-widget" href="/yandex-browser-manifest.json" />
+
+	<!-- Preconnect & Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+		rel="stylesheet"
+	/>
+
+	<!-- Style injection przez Vite: 
+       import '../../styles/main.scss' w entry JS -->
 </head>

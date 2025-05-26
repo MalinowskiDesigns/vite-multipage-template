@@ -1,6 +1,7 @@
 {
-	"title": "Strona Główna | MalinowskiDesigns",
-	"description": "Nowoczesne projekty stron internetowych szyte na miarę.",
-	"keywords": "strona główna, projektowanie stron, agencja interaktywna",
-	"og_image": "/assets/images/home-og.jpg"
+	"title": "Strona Główna",
+	"desc": "Witamy na stronie głównej szablonu Vite Vanilla Template – szybko i lekko.",
+	"keywords": "vite, vanilla js, multipage, template, scss",
+	"url": "https://twojadomena.pl/",
+	"og_image": "https://twojadomena.pl/assets/og/home.webp"
 }

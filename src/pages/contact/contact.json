@@ -1,6 +1,7 @@
 {
-	"title": "Kontakt | MalinowskiDesigns",
-	"description": "Skontaktuj się z nami w sprawie współpracy.",
-	"keywords": "kontakt, formularz, zapytanie",
-	"og_image": "/assets/images/contact-og.jpg"
+	"title": "Kontakt",
+	"desc": "Skontaktuj się z nami – formularz, dane teleadresowe i więcej.",
+	"keywords": "kontakt, vite, vanilla js, multipage",
+	"url": "https://twojadomena.pl/contact.html",
+	"og_image": "https://twojadomena.pl/assets/og/contact.webp"
 }
