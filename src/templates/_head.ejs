@@ -1,0 +1,25 @@
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<title><%= meta.title %></title>
+	<meta name="description" content="<%= meta.description %>" />
+	<meta name="keywords" content="<%= meta.keywords %>" />
+
+	<!-- OpenGraph -->
+	<meta property="og:title" content="<%= meta.title %>" />
+	<meta property="og:description" content="<%= meta.description %>" />
+	<% if (meta.og_image) { %>
+	<meta property="og:image" content="<%= meta.og_image %>" />
+	<% } %>
+
+	<!-- Twitter -->
+	<meta name="twitter:title" content="<%= meta.title %>" />
+	<meta name="twitter:description" content="<%= meta.description %>" />
+	<% if (meta.og_image) { %>
+	<meta name="twitter:image" content="<%= meta.og_image %>" />
+	<% } %>
+
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="stylesheet" href="/src/styles/main.scss" />
+</head>
