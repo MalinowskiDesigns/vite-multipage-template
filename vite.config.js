@@ -6,6 +6,8 @@ import checker from 'vite-plugin-checker'; // ← tu!
 import eslintPlugin from 'vite-plugin-eslint';
 import webfontDownload from 'vite-plugin-webfont-dl';
 import viteImagemin from 'vite-plugin-imagemin';
+import clean from 'vite-plugin-clean';
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 
 // 1. Automatyczne wykrycie stron z katalogu src/pages/
 const pageDirs = fs
@@ -48,12 +50,12 @@ const inputEntries = pageDirs.reduce((acc, page) => {
 
 // 4. Eksport konfiguracji
 export default defineConfig({
-	build: {
-		rollupOptions: {
-			input: inputEntries,
-		},
-	},
 	plugins: [
+		clean({
+			targets: ['./dist'], // albo inna ścieżka/katalogi do usunięcia
+			verbose: true, // opcjonalnie: loguj usuwane pliki
+			watch: false, // false = czyść tylko na build, true = czyść też w dev przy zmianach
+		}),
 		createHtmlPlugin({
 			pages,
 		}),
@@ -62,6 +64,11 @@ export default defineConfig({
 				lintCommand: 'eslint "./src/**/*.js"', // lub './src/**/*.{js,vue,ts}'
 			},
 		}),
+		createSvgIconsPlugin({
+			iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
+			symbolId: 'icon-[name]',
+		}),
+
 		webfontDownload(), // ← zero-config, automatycznie znajdzie i pobierze linki Google Fonts
 		viteImagemin({
 			// Optymalizacja JPEG
@@ -89,4 +96,9 @@ export default defineConfig({
 			},
 		}),
 	],
+	build: {
+		rollupOptions: {
+			input: inputEntries,
+		},
+	},
 });
