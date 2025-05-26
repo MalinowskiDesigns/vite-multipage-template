@@ -35,7 +35,7 @@ const htmlPlugins = pageDirs.map((page) => {
 			ejsOptions: {
 				filename: resolve(__dirname, `${htmlName}.html`),
 				localsName: 'meta',
-				views: [resolve(__dirname, './')], // <-- KLUCZOWE: ustaw katalog główny projektu
+				views: [resolve(__dirname, 'src/templates')], // <-- KLUCZOWE: ustaw katalog główny projektu
 			},
 		},
 		minify: true,
