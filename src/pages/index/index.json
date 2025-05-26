@@ -1,6 +1,9 @@
 {
-	"title": "Strona Główna | MalinowskiDesigns",
-	"description": "Tworzymy nowoczesne i wydajne strony internetowe dopasowane do Twoich potrzeb.",
-	"keywords": "strona główna, projektowanie stron, malinowski designs",
-	"og_image": "/assets/images/og-home.jpg"
+	"title": "Vite Template | Strona główna",
+	"description": "Vite Template – lekki i szybki szablon multipage oparty na Vite, JavaScript, SCSS i EJS.",
+	"keywords": "vite template, multipage, vanilla js, scss, vite",
+	"robots": "index, follow",
+	"url": "https://twojadomena.pl/",
+	"cssUrl": "/src/styles/index.css",
+	"og_image": "https://twojadomena.pl/dist/img/og_image_vitetemplate.webp"
 }

@@ -1,0 +1,37 @@
+// src/styles/main.scss
+
+// 1. ABSTRACTS  – zmienne, funkcje, mixiny
+@use 'abstracts/functions';
+@use 'abstracts/mixins';
+@use 'abstracts/placeholders';
+@use 'abstracts/variables';
+
+// 2. BASE       – reset, typografia, utilities
+@use 'base/base';
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/utilities';
+
+// 3. COMPONENTS – przyciski, karty, formularze…
+@use 'components/buttons';
+@use 'components/cards';
+@use 'components/dropdown';
+@use 'components/forms';
+@use 'components/modals';
+@use 'components/navbar';
+
+// 4. LAYOUT     – układ strony (grid, header, footer itp.)
+@use 'layout/container';
+@use 'layout/footer';
+@use 'layout/grid';
+@use 'layout/header';
+@use 'layout/sections';
+@use 'layout/sidebar';
+// …inne pliki w folderze layout…
+
+// 5. THEMES     – motywy (ciemny / jasny)
+@use 'themes/light';
+@use 'themes/dark';
+
+// 6. VENDORS    – biblioteki zewnętrzne
+@use 'vendors/example';
