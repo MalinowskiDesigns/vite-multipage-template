@@ -8,6 +8,7 @@ import webfontDownload from 'vite-plugin-webfont-dl';
 import viteImagemin from 'vite-plugin-imagemin';
 import clean from 'vite-plugin-clean';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
+import sitemap from 'vite-plugin-sitemap';
 
 // 1. Automatyczne wykrycie stron z katalogu src/pages/
 const pageDirs = fs
@@ -94,6 +95,14 @@ export default defineConfig({
 			avif: {
 				quality: 90, // 0–100, dobierz do balansowania rozmiaru vs. jakości
 			},
+		}),
+		sitemap({
+			hostname: 'https://twojadomena.pl', // zmień na swój docelowy URL
+			outDir: 'dist', // opcjonalnie, domyślnie 'dist'
+			routes: [], // opcjonalnie: dodaj tutaj ręcznie dynamiczne ścieżki
+			changefreq: 'weekly', // opcjonalnie: domyślne <changefreq>
+			priority: 0.8, // opcjonalnie: domyślny <priority>
+			readable: true, // opcjonalnie: sformatuj sitemapę w czytelny XML
 		}),
 	],
 	build: {
