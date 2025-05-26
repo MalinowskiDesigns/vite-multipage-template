@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { createHtmlPlugin } from 'vite-plugin-html';
 import fs from 'fs';
+import { createHtmlPlugin } from 'vite-plugin-html';
 
-// automatycznie wykrywamy wszystkie strony w /src/pages/
+// 1. Automatyczne wykrycie stron z katalogu src/pages/
 const pageDirs = fs
 	.readdirSync('./src/pages')
 	.filter(
@@ -13,40 +13,45 @@ const pageDirs = fs
 			fs.existsSync(`${name === 'home' ? 'index' : name}.html`)
 	);
 
-// tworzymy entry points do Rollupa
-const inputEntries = pageDirs.reduce((acc, page) => {
-	const htmlName = page === 'home' ? 'index' : page;
-	acc[page] = resolve(__dirname, `${htmlName}.html`);
-	return acc;
-}, {});
-
-// tworzymy dynamicznie pluginy HTML z meta danymi i include
-const htmlPlugins = pageDirs.map((page) => {
+// 2. Wygenerowanie tablicy `pages` dla vite-plugin-html
+const pages = pageDirs.map((page) => {
 	const htmlName = page === 'home' ? 'index' : page;
 	const meta = JSON.parse(
 		fs.readFileSync(`./src/pages/${page}/${page}.json`, 'utf-8')
 	);
 
-	return createHtmlPlugin({
+	return {
 		entry: `src/pages/${page}/${page}.js`,
+		filename: `${htmlName}.html`,
 		template: `${htmlName}.html`,
-		inject: {
+		injectOptions: {
 			data: meta,
 			ejsOptions: {
 				filename: resolve(__dirname, `${htmlName}.html`),
 				localsName: 'meta',
-				views: [resolve(__dirname, 'src/templates')], // <-- KLUCZOWE: ustaw katalog główny projektu
+				views: [resolve(__dirname, 'src/templates')],
 			},
 		},
-		minify: true,
-	});
+	};
 });
 
+// 3. Wygenerowanie inputEntries dla Rollupa
+const inputEntries = pageDirs.reduce((acc, page) => {
+	const htmlName = page === 'home' ? 'index' : page;
+	acc[htmlName] = resolve(__dirname, `${htmlName}.html`);
+	return acc;
+}, {});
+
+// 4. Eksport konfiguracji
 export default defineConfig({
 	build: {
 		rollupOptions: {
 			input: inputEntries,
 		},
 	},
-	plugins: htmlPlugins,
+	plugins: [
+		createHtmlPlugin({
+			pages,
+		}),
+	],
 });
