@@ -4,6 +4,7 @@ import fs from 'fs';
 import { createHtmlPlugin } from 'vite-plugin-html';
 import checker from 'vite-plugin-checker'; // ← tu!
 import eslintPlugin from 'vite-plugin-eslint';
+import webfontDownload from 'vite-plugin-webfont-dl';
 
 // 1. Automatyczne wykrycie stron z katalogu src/pages/
 const pageDirs = fs
@@ -60,5 +61,6 @@ export default defineConfig({
 				lintCommand: 'eslint "./src/**/*.js"', // lub './src/**/*.{js,vue,ts}'
 			},
 		}),
+		webfontDownload(), // ← zero-config, automatycznie znajdzie i pobierze linki Google Fonts
 	],
 });
