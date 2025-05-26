@@ -5,6 +5,7 @@ import { createHtmlPlugin } from 'vite-plugin-html';
 import checker from 'vite-plugin-checker'; // ← tu!
 import eslintPlugin from 'vite-plugin-eslint';
 import webfontDownload from 'vite-plugin-webfont-dl';
+import viteImagemin from 'vite-plugin-imagemin';
 
 // 1. Automatyczne wykrycie stron z katalogu src/pages/
 const pageDirs = fs
@@ -62,5 +63,30 @@ export default defineConfig({
 			},
 		}),
 		webfontDownload(), // ← zero-config, automatycznie znajdzie i pobierze linki Google Fonts
+		viteImagemin({
+			// Optymalizacja JPEG
+			mozjpeg: {
+				quality: 90, // 0–100 (wyższa = lepsza jakość, większy rozmiar)
+				progressive: true,
+			},
+			// Optymalizacja PNG
+			pngquant: {
+				quality: [0.9, 0.95], // zakres minimalna–maksymalna jakość
+				speed: 4, // 1 (wolno, najlepsza kompresja) … 10 (szybko, gorsza kompresja)
+			},
+			// Optymalizacja SVG
+			svgo: {
+				plugins: [
+					{ name: 'removeViewBox', active: false },
+					{ name: 'cleanupIDs', active: true },
+				],
+			},
+			// Wyłącz WebP
+			webp: false,
+			// Tylko AVIF
+			avif: {
+				quality: 90, // 0–100, dobierz do balansowania rozmiaru vs. jakości
+			},
+		}),
 	],
 });
