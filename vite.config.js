@@ -13,9 +13,10 @@ import clean from 'vite-plugin-clean';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import sitemap from 'vite-plugin-sitemap';
 import legacy from '@vitejs/plugin-legacy';
+import htmlMinifier from 'vite-plugin-html-minifier';
+// import PluginCritical   from 'rollup-plugin-critical';   // ★ (na razie wyłączony)
 
 /* ───────── helpery ───────── */
-
 const pageDirs = () =>
 	fs
 		.readdirSync('./src/pages')
@@ -28,31 +29,31 @@ const pageDirs = () =>
 
 const makeInput = (dirs) =>
 	dirs.reduce((acc, p) => {
-		const html = p === 'home' ? 'index' : p;
-		acc[html] = resolve(__dirname, `${html}.html`);
+		const slug = p === 'home' ? 'index' : p;
+		acc[slug] = resolve(__dirname, `${slug}.html`);
 		return acc;
 	}, {});
 
 /* ───────── konfiguracja Vite ───────── */
-
 export default defineConfig(({ mode }) => {
+	// ładujemy tylko zmienne z prefiksem VITE_
 	const env = loadEnv(mode, process.cwd(), 'VITE_');
 	const dirs = pageDirs();
 
-	/* createHtmlPlugin – meta z JSON + .env */
+	/* createHtmlPlugin – meta + ENV */
 	const pages = dirs.map((d) => {
-		const html = d === 'home' ? 'index' : d;
-		const json = JSON.parse(
+		const meta = JSON.parse(
 			fs.readFileSync(`src/pages/${d}/${d}.json`, 'utf-8')
 		);
+		const slug = d === 'home' ? 'index' : d;
 		return {
 			entry: `src/pages/${d}/${d}.js`,
-			filename: `${html}.html`,
-			template: `${html}.html`,
+			filename: `${slug}.html`, // zapis w dist/
+			template: `${slug}.html`, // szablon źródłowy w root
 			injectOptions: {
-				data: { ...json, ...env },
+				data: { ...meta, ...env },
 				ejsOptions: {
-					filename: resolve(__dirname, `${html}.html`),
+					filename: resolve(__dirname, `${slug}.html`),
 					localsName: 'meta',
 					views: [resolve(__dirname, 'src/templates')],
 				},
@@ -62,10 +63,8 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		plugins: [
-			/* 1. czyść dist */
-			clean({ targets: ['./dist'], verbose: true }),
-
-			/* 3. PWA (SW + cache) – używa wygenerowanego manifestu */
+			clean({ targets: ['./dist'] }),
+			FaviconsInject(resolve(__dirname, 'public/logo.svg'), { inject: true }),
 			VitePWA({
 				registerType: 'autoUpdate',
 				includeAssets: [
@@ -78,43 +77,23 @@ export default defineConfig(({ mode }) => {
 					globPatterns: ['**/*.{html,js,css,png,svg,ico,jpg,webp,avif}'],
 				},
 			}),
-
-			/* 4. wielostronicowy HTML/EJS */
 			createHtmlPlugin({ pages }),
-
-			/* 2. favicony + browserconfig + manifest z jednego logo.svg */
-			FaviconsInject(resolve(__dirname, 'public/logo.svg'), {
-				favicons: {
-					appName: 'Vite Template',
-					appDescription: 'Lekki, wielostronicowy szablon z PWA',
-					background: '#ffffff',
-					theme_color: '#040413',
-					icons: {
-						android: true,
-						appleIcon: true,
-						appleStartup: true,
-						favicons: true,
-						windows: true,
-						yandex: true,
-						maskable: true, // generuje maskable-192/512
-					},
+			htmlMinifier({
+				filter: /\.html?$/, // (domyślnie) – które pliki minifikować
+				minifierOptions: {
+					collapseWhitespace: true,
+					removeComments: true,
+					minifyCSS: true,
+					minifyJS: true,
+					sortAttributes: true,
 				},
-				inject: true, // automatyczne <link>/<meta> w <head>
 			}),
-
-			/* 5. ESLint */
-			eslint({ include: ['src/**/*.js'], cache: false }),
-
-			/* 6. SVG sprite z /src/assets/icons */
+			eslint({ include: ['src/**/*.js'] }),
 			createSvgIconsPlugin({
 				iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
 				symbolId: 'icon-[name]',
 			}),
-
-			/* 7. lokalne Google Fonts */
 			webfontDownload(),
-
-			/* 8. optymalizacja obrazków */
 			viteImagemin({
 				mozjpeg: { quality: 90, progressive: true },
 				pngquant: { quality: [0.9, 0.95], speed: 4 },
@@ -127,15 +106,25 @@ export default defineConfig(({ mode }) => {
 				webp: false,
 				avif: { quality: 90 },
 			}),
-
-			/* 9. sitemap.xml + robots.txt */
-			sitemap({
-				hostname: env.VITE_SITE_URL,
-				readable: true,
-			}),
-
-			/* 10. legacy polyfills */
+			sitemap({ hostname: env.VITE_SITE_URL, readable: true }),
 			legacy({ targets: ['defaults', 'not IE 11'] }),
+
+			/* ★ Critical CSS – odkomentuj, gdy będziesz gotów do dalszych testów
+      (() => {
+        const crit = PluginCritical({
+          criticalUrl: '',
+          criticalBase: 'dist/',
+          criticalPages: dirs.map(d => ({
+            uri: d === 'home' ? '/' : `/${d}`,
+            template: d === 'home' ? 'index' : d,
+          })),
+          criticalConfig: { inline: true, width: 1300, height: 900 },
+        });
+        crit.enforce = 'post';
+        crit.apply   = 'build';
+        return crit;
+      })(),
+      */
 		],
 
 		build: {
