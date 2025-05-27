@@ -9,6 +9,7 @@ import clean from 'vite-plugin-clean';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import sitemap from 'vite-plugin-sitemap';
 import legacy from '@vitejs/plugin-legacy';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
 	// 0. Załaduj VITE_* zmienne z .env
@@ -63,6 +64,41 @@ export default defineConfig(({ mode }) => {
 				targets: ['./dist'],
 				verbose: true,
 				watch: false,
+			}),
+			VitePWA({
+				registerType: 'autoUpdate',
+				includeAssets: ['favicon.ico', 'robots.txt'], // pliki z public/, które też mają być w SW
+				manifest: {
+					name: 'Vite Template',
+					short_name: 'ViteTpl',
+					description: 'Lekki, wielostronicowy szablon z PWA',
+					theme_color: '#040413',
+					background_color: '#ffffff',
+					display: 'standalone',
+					start_url: '/',
+					icons: [
+						{
+							src: 'icons/pwa-192x192.png',
+							sizes: '192x192',
+							type: 'image/png',
+						},
+						{
+							src: 'icons/pwa-512x512.png',
+							sizes: '512x512',
+							type: 'image/png',
+						},
+						{
+							src: 'icons/pwa-512x512-maskable.png',
+							sizes: '512x512',
+							type: 'image/png',
+							purpose: 'maskable',
+						},
+					],
+				},
+				workbox: {
+					// jakie pliki cache’ować (wszystkie HTML, JS, CSS, obrazy)
+					globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+				},
 			}),
 
 			// generuje HTML/EJS z data=meta

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "api_version": 1,
+  "layout": {
+    "logo": "/dist/icons/yandex-browser-50x50.png",
+    "color": "#FEFBF9",
+    "show_title": true
+  }
+}
