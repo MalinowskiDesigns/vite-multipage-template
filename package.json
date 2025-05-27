@@ -19,6 +19,7 @@
     "vite-plugin-checker": "^0.9.3",
     "vite-plugin-clean": "^2.0.1",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-favicons-inject": "^2.2.0",
     "vite-plugin-handlebars": "^2.0.0",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-imagemin": "^0.6.1",

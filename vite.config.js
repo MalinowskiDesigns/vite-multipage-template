@@ -1,7 +1,10 @@
 // vite.config.js
-import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
-import { resolve, extname } from 'path';
+import { defineConfig, loadEnv } from 'vite';
+import { resolve } from 'path';
 import fs from 'fs';
+
+import FaviconsInject from 'vite-plugin-favicons-inject';
+import { VitePWA } from 'vite-plugin-pwa';
 import { createHtmlPlugin } from 'vite-plugin-html';
 import eslint from 'vite-plugin-eslint';
 import webfontDownload from 'vite-plugin-webfont-dl';
@@ -10,75 +13,46 @@ import clean from 'vite-plugin-clean';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import sitemap from 'vite-plugin-sitemap';
 import legacy from '@vitejs/plugin-legacy';
-import { VitePWA } from 'vite-plugin-pwa';
 
-/* -------------------------------------------------------------------------- */
-/*  Pomocnicze funkcje (modern arrow-style)                                    */
-/* -------------------------------------------------------------------------- */
+/* ───────── helpery ───────── */
 
-// ► buduje tablicę ikon na podstawie plików w public/icons/
-const buildIconArray = (dir = 'public/icons') => {
-	return fs
-		.readdirSync(dir)
-		.filter((f) => /\.(png|webp)$/i.test(f) && /\d+x\d+/.test(f))
-		.map((f) => {
-			const [, size] = f.match(/(\d+x\d+)/) || [];
-			const purpose = /maskable/i.test(f) ? 'maskable' : undefined;
-			return {
-				src: `icons/${f}`,
-				sizes: size,
-				type: `image/${extname(f).slice(1)}`,
-				...(purpose && { purpose }),
-			};
-		});
-};
-
-// ► zwraca listę katalogów stron
-const getPageDirs = () =>
+const pageDirs = () =>
 	fs
 		.readdirSync('./src/pages')
 		.filter(
-			(n) =>
-				fs.existsSync(`./src/pages/${n}/${n}.json`) &&
-				fs.existsSync(`./src/pages/${n}/${n}.js`) &&
-				fs.existsSync(`${n === 'home' ? 'index' : n}.html`)
+			(d) =>
+				fs.existsSync(`src/pages/${d}/${d}.json`) &&
+				fs.existsSync(`src/pages/${d}/${d}.js`) &&
+				fs.existsSync(`${d === 'home' ? 'index' : d}.html`)
 		);
 
-// ► buduje inputEntries dla Rollupa
-const makeInputEntries = (dirs) =>
+const makeInput = (dirs) =>
 	dirs.reduce((acc, p) => {
-		const htmlName = p === 'home' ? 'index' : p;
-		acc[htmlName] = resolve(__dirname, `${htmlName}.html`);
+		const html = p === 'home' ? 'index' : p;
+		acc[html] = resolve(__dirname, `${html}.html`);
 		return acc;
 	}, {});
 
-/* -------------------------------------------------------------------------- */
-/*  Konfiguracja Vite                                                          */
-/* -------------------------------------------------------------------------- */
+/* ───────── konfiguracja Vite ───────── */
 
 export default defineConfig(({ mode }) => {
-	/* 0. env */
 	const env = loadEnv(mode, process.cwd(), 'VITE_');
+	const dirs = pageDirs();
 
-	/* 1. katalogi stron */
-	const pageDirs = getPageDirs();
-
-	/* 2. konfiguracja createHtmlPlugin */
-	const pages = pageDirs.map((dir) => {
-		const htmlName = dir === 'home' ? 'index' : dir;
-		const pageMeta = JSON.parse(
-			fs.readFileSync(`./src/pages/${dir}/${dir}.json`, 'utf-8')
+	/* createHtmlPlugin – meta z JSON + .env */
+	const pages = dirs.map((d) => {
+		const html = d === 'home' ? 'index' : d;
+		const json = JSON.parse(
+			fs.readFileSync(`src/pages/${d}/${d}.json`, 'utf-8')
 		);
-		const meta = { ...pageMeta, ...env };
-
 		return {
-			entry: `src/pages/${dir}/${dir}.js`,
-			filename: `${htmlName}.html`,
-			template: `${htmlName}.html`,
+			entry: `src/pages/${d}/${d}.js`,
+			filename: `${html}.html`,
+			template: `${html}.html`,
 			injectOptions: {
-				data: meta,
+				data: { ...json, ...env },
 				ejsOptions: {
-					filename: resolve(__dirname, `${htmlName}.html`),
+					filename: resolve(__dirname, `${html}.html`),
 					localsName: 'meta',
 					views: [resolve(__dirname, 'src/templates')],
 				},
@@ -86,56 +60,61 @@ export default defineConfig(({ mode }) => {
 		};
 	});
 
-	/* 3. input dla Rollupa */
-	const inputEntries = makeInputEntries(pageDirs);
-
-	/* 4. końcowy obiekt konfiguracyjny */
 	return {
 		plugins: [
-			/* czyszczenie dist */
+			/* 1. czyść dist */
 			clean({ targets: ['./dist'], verbose: true }),
 
-			/* PWA */
+			/* 3. PWA (SW + cache) – używa wygenerowanego manifestu */
 			VitePWA({
 				registerType: 'autoUpdate',
 				includeAssets: [
 					'favicon.ico',
-					'robots.txt',
-					'icons/favicon-48x48.png',
-					'icons/android-chrome-48x48.png',
-					'icons/mstile-144x144.png',
+					'browserconfig.xml',
+					'yandex-browser-manifest.json',
+					'og_image.jpg',
 				],
-				manifest: {
-					name: 'Vite Template',
-					short_name: 'ViteTpl',
-					description: 'Lekki, wielostronicowy szablon z PWA',
-					theme_color: '#040413',
-					background_color: '#ffffff',
-					display: 'standalone',
-					start_url: '/',
-					icons: buildIconArray(), // ← dynamicznie wygenerowana lista
-				},
 				workbox: {
-					globPatterns: ['**/*.{js,css,html,png,svg,ico,webp,avif}'],
+					globPatterns: ['**/*.{html,js,css,png,svg,ico,jpg,webp,avif}'],
 				},
 			}),
 
-			/* HTML + EJS */
+			/* 4. wielostronicowy HTML/EJS */
 			createHtmlPlugin({ pages }),
 
-			/* ESLint */
+			/* 2. favicony + browserconfig + manifest z jednego logo.svg */
+			FaviconsInject(resolve(__dirname, 'public/logo.svg'), {
+				favicons: {
+					appName: 'Vite Template',
+					appDescription: 'Lekki, wielostronicowy szablon z PWA',
+					background: '#ffffff',
+					theme_color: '#040413',
+					icons: {
+						android: true,
+						appleIcon: true,
+						appleStartup: true,
+						favicons: true,
+						windows: true,
+						yandex: true,
+						maskable: true, // generuje maskable-192/512
+					},
+				},
+				inject: true, // automatyczne <link>/<meta> w <head>
+			}),
+
+			/* 5. ESLint */
 			eslint({ include: ['src/**/*.js'], cache: false }),
 
-			/* sprite SVG */
+			/* 6. SVG sprite z /src/assets/icons */
 			createSvgIconsPlugin({
 				iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
 				symbolId: 'icon-[name]',
 			}),
 
-			/* Google Fonts lokalnie */
+			/* 7. lokalne Google Fonts */
 			webfontDownload(),
 
-			/* optymalizacja obrazu */
+			/* 8. optymalizacja obrazków */
 			viteImagemin({
 				mozjpeg: { quality: 90, progressive: true },
 				pngquant: { quality: [0.9, 0.95], speed: 4 },
@@ -149,28 +128,22 @@ export default defineConfig(({ mode }) => {
 				avif: { quality: 90 },
 			}),
 
-			/* sitemap */
+			/* 9. sitemap.xml + robots.txt */
 			sitemap({
 				hostname: env.VITE_SITE_URL,
-				outDir: 'dist',
-				changefreq: 'weekly',
-				priority: 0.8,
 				readable: true,
 			}),
 
-			/* legacy build */
+			/* 10. legacy polyfills */
 			legacy({ targets: ['defaults', 'not IE 11'] }),
 		],
 
 		build: {
 			rollupOptions: {
-				input: inputEntries,
+				input: makeInput(dirs),
 				output: {
-					manualChunks: (id) => {
+					manualChunks(id) {
 						if (id.includes('node_modules')) return 'vendor';
-
-						// wspólne moduły użyte w ≥ 2 stronach
-						if (id.includes('/src/') && id.match(/\.js$/)) return 'commons';
 					},
 				},
 			},
