@@ -3,6 +3,7 @@ import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
 import fs from 'fs';
 
+/* — pluginy — */
 import FaviconsInject from 'vite-plugin-favicons-inject';
 import { VitePWA } from 'vite-plugin-pwa';
 import { createHtmlPlugin } from 'vite-plugin-html';
@@ -15,9 +16,13 @@ import clean from 'vite-plugin-clean';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import sitemap from 'vite-plugin-sitemap';
 import legacy from '@vitejs/plugin-legacy';
-// import PluginCritical from 'rollup-plugin-critical';     // ← nadal wyłączony
+import mkcert from 'vite-plugin-mkcert';
+import Inspect from 'vite-plugin-inspect';
+import FullReload from 'vite-plugin-full-reload';
+import { imagetools } from 'vite-imagetools';
+// import PluginCritical from 'rollup-plugin-critical';
 
-/* ───────── helpery ───────── */
+/* — helpery — */
 const pageDirs = () =>
 	fs
 		.readdirSync('./src/pages')
@@ -35,11 +40,12 @@ const makeInput = (dirs) =>
 		return acc;
 	}, {});
 
-/* ───────── konfiguracja Vite ───────── */
+/* — konfiguracja — */
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), 'VITE_');
 	const dirs = pageDirs();
 
+	/* lista stron dla vite-plugin-html */
 	const pages = dirs.map((d) => {
 		const meta = JSON.parse(
 			fs.readFileSync(`src/pages/${d}/${d}.json`, 'utf-8')
@@ -62,8 +68,11 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		plugins: [
+			Inspect(),
 			clean({ targets: ['./dist'] }),
 			FaviconsInject(resolve(__dirname, 'public/logo.svg'), { inject: true }),
+
+			/* PWA */
 			VitePWA({
 				registerType: 'autoUpdate',
 				includeAssets: [
@@ -73,11 +82,14 @@ export default defineConfig(({ mode }) => {
 					'og_image.jpg',
 				],
 				workbox: {
-					globPatterns: ['**/*.{html,js,css,png,svg,ico,jpg,webp,avif}'],
+					globPatterns: ['**/*.{html,js,css,svg,ico,avif}'],
 				},
 			}),
 
+			mkcert(),
+			FullReload(['src/templates/**/*', 'src/pages/**/*.json']),
 			createHtmlPlugin({ pages }),
+
 			htmlMinifier({
 				minifierOptions: {
 					collapseWhitespace: true,
@@ -90,11 +102,8 @@ export default defineConfig(({ mode }) => {
 
 			eslint({ include: ['src/**/*.js'] }),
 
-			/* ★ Checker pokazuje overlay z ESLint & Stylelint (v16) */
 			checker({
-				eslint: {
-					lintCommand: 'eslint "./src/**/*.{js,html,ejs}" --format stylish',
-				},
+				eslint: false,
 				stylelint: {
 					lintCommand: 'stylelint "./src/**/*.{css,scss}"',
 				},
@@ -104,22 +113,56 @@ export default defineConfig(({ mode }) => {
 				iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
 				symbolId: 'icon-[name]',
 			}),
+
 			webfontDownload(),
-			viteImagemin({
-				mozjpeg: { quality: 90, progressive: true },
-				pngquant: { quality: [0.9, 0.95], speed: 4 },
-				svgo: {
-					plugins: [
-						{ name: 'removeViewBox', active: false },
-						{ name: 'cleanupIDs', active: true },
-					],
+
+			/* ----------  IMAGES PIPELINE  ---------- */
+
+			/* 1) auto-doklej query do <img> i CSS url() */
+			{
+				name: 'auto-jpg-png-to-avif',
+				enforce: 'pre',
+				transformIndexHtml(html) {
+					return html.replace(
+						/(<img\s+[^>]*src=")([^"?]*\.(jpe?g|png))"/gi,
+						(_, prefix, path) =>
+							`${prefix}${path}?w=480;768;1280&format=avif&as=srcset"`
+					);
 				},
-				webp: false,
-				avif: { quality: 90 },
+				transform(code, id) {
+					if (!/\.css$/i.test(id)) return;
+					return code.replace(
+						/url\((['"]?)([^'")?]+?\.(jpe?g|png))\1\)/gi,
+						(_, q, path) =>
+							`url(${q}${path}?w=480;768;1280&format=avif&as=srcset${q})`
+					);
+				},
+			},
+
+			/* 2) imagetools — tworzy warianty AVIF + srcset */
+			imagetools({
+				defaultDirectives: new URLSearchParams({
+					format: 'avif', // tylko AVIF
+					quality: '80',
+					as: 'srcset', // zwróć string srcset (użyje go transform)
+				}),
 			}),
+
+			/* 3) dodatkowa kompresja AVIF */
+			viteImagemin({
+				avif: { quality: 90 },
+				webp: false,
+				mozjpeg: false,
+				pngquant: false,
+				svgo: { plugins: [{ name: 'removeViewBox', active: false }] },
+			}),
+
+			/* ---------------------------------------- */
+
 			sitemap({ hostname: env.VITE_SITE_URL, readable: true }),
+
 			legacy({ targets: ['defaults', 'not IE 11'] }),
-			// PluginCritical można dodać z powrotem w tym miejscu
+			// PluginCritical można dodać z powrotem
 		],
 
 		build: {
