@@ -11,7 +11,9 @@
 		"lint": "eslint \"./src/**/*.{js,html,ejs}\" --format stylish"
 	},
 	"devDependencies": {
+		"@vite-pwa/assets-generator": "^1.0.0",
 		"@vitejs/plugin-legacy": "^6.1.1",
+		"fast-glob": "^3.3.3",
 		"html-minifier-terser": "^7.2.0",
 		"imagemin-avif": "^0.1.6",
 		"imagemin-mozjpeg": "^10.0.0",
