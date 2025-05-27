@@ -1,8 +1,9 @@
-import { defineConfig, loadEnv } from 'vite';
-import { resolve } from 'path';
+// vite.config.js
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
+import { resolve, extname } from 'path';
 import fs from 'fs';
 import { createHtmlPlugin } from 'vite-plugin-html';
-import eslintPlugin from 'vite-plugin-eslint';
+import eslint from 'vite-plugin-eslint';
 import webfontDownload from 'vite-plugin-webfont-dl';
 import viteImagemin from 'vite-plugin-imagemin';
 import clean from 'vite-plugin-clean';
@@ -11,31 +12,67 @@ import sitemap from 'vite-plugin-sitemap';
 import legacy from '@vitejs/plugin-legacy';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig(({ mode }) => {
-	// 0. Załaduj VITE_* zmienne z .env
-	const env = loadEnv(mode, process.cwd(), 'VITE_');
+/* -------------------------------------------------------------------------- */
+/*  Pomocnicze funkcje (modern arrow-style)                                    */
+/* -------------------------------------------------------------------------- */
 
-	// 1. Wykryj katalogi stron
-	const pageDirs = fs
+// ► buduje tablicę ikon na podstawie plików w public/icons/
+const buildIconArray = (dir = 'public/icons') => {
+	return fs
+		.readdirSync(dir)
+		.filter((f) => /\.(png|webp)$/i.test(f) && /\d+x\d+/.test(f))
+		.map((f) => {
+			const [, size] = f.match(/(\d+x\d+)/) || [];
+			const purpose = /maskable/i.test(f) ? 'maskable' : undefined;
+			return {
+				src: `icons/${f}`,
+				sizes: size,
+				type: `image/${extname(f).slice(1)}`,
+				...(purpose && { purpose }),
+			};
+		});
+};
+
+// ► zwraca listę katalogów stron
+const getPageDirs = () =>
+	fs
 		.readdirSync('./src/pages')
 		.filter(
-			(name) =>
-				fs.existsSync(`./src/pages/${name}/${name}.json`) &&
-				fs.existsSync(`./src/pages/${name}/${name}.js`) &&
-				fs.existsSync(`${name === 'home' ? 'index' : name}.html`)
+			(n) =>
+				fs.existsSync(`./src/pages/${n}/${n}.json`) &&
+				fs.existsSync(`./src/pages/${n}/${n}.js`) &&
+				fs.existsSync(`${n === 'home' ? 'index' : n}.html`)
 		);
 
-	// 2. Zbuduj tablicę `pages` do EJS pluginu
-	const pages = pageDirs.map((page) => {
-		const htmlName = page === 'home' ? 'index' : page;
+// ► buduje inputEntries dla Rollupa
+const makeInputEntries = (dirs) =>
+	dirs.reduce((acc, p) => {
+		const htmlName = p === 'home' ? 'index' : p;
+		acc[htmlName] = resolve(__dirname, `${htmlName}.html`);
+		return acc;
+	}, {});
+
+/* -------------------------------------------------------------------------- */
+/*  Konfiguracja Vite                                                          */
+/* -------------------------------------------------------------------------- */
+
+export default defineConfig(({ mode }) => {
+	/* 0. env */
+	const env = loadEnv(mode, process.cwd(), 'VITE_');
+
+	/* 1. katalogi stron */
+	const pageDirs = getPageDirs();
+
+	/* 2. konfiguracja createHtmlPlugin */
+	const pages = pageDirs.map((dir) => {
+		const htmlName = dir === 'home' ? 'index' : dir;
 		const pageMeta = JSON.parse(
-			fs.readFileSync(`./src/pages/${page}/${page}.json`, 'utf-8')
+			fs.readFileSync(`./src/pages/${dir}/${dir}.json`, 'utf-8')
 		);
-		// połącz dane JSON + env
 		const meta = { ...pageMeta, ...env };
 
 		return {
-			entry: `src/pages/${page}/${page}.js`,
+			entry: `src/pages/${dir}/${dir}.js`,
 			filename: `${htmlName}.html`,
 			template: `${htmlName}.html`,
 			injectOptions: {
@@ -49,25 +86,25 @@ export default defineConfig(({ mode }) => {
 		};
 	});
 
-	// 3. Przygotuj inputEntries dla Rollupa
-	const inputEntries = pageDirs.reduce((acc, page) => {
-		const htmlName = page === 'home' ? 'index' : page;
-		acc[htmlName] = resolve(__dirname, `${htmlName}.html`);
-		return acc;
-	}, {});
+	/* 3. input dla Rollupa */
+	const inputEntries = makeInputEntries(pageDirs);
 
-	// 4. Finalna konfiguracja Vite
+	/* 4. końcowy obiekt konfiguracyjny */
 	return {
 		plugins: [
-			// czyści dist/ przed buildem
-			clean({
-				targets: ['./dist'],
-				verbose: true,
-				watch: false,
-			}),
+			/* czyszczenie dist */
+			clean({ targets: ['./dist'], verbose: true }),
+
+			/* PWA */
 			VitePWA({
 				registerType: 'autoUpdate',
-				includeAssets: ['favicon.ico', 'robots.txt'], // pliki z public/, które też mają być w SW
+				includeAssets: [
+					'favicon.ico',
+					'robots.txt',
+					'icons/favicon-48x48.png',
+					'icons/android-chrome-48x48.png',
+					'icons/mstile-144x144.png',
+				],
 				manifest: {
 					name: 'Vite Template',
 					short_name: 'ViteTpl',
@@ -76,52 +113,29 @@ export default defineConfig(({ mode }) => {
 					background_color: '#ffffff',
 					display: 'standalone',
 					start_url: '/',
-					icons: [
-						{
-							src: 'icons/pwa-192x192.png',
-							sizes: '192x192',
-							type: 'image/png',
-						},
-						{
-							src: 'icons/pwa-512x512.png',
-							sizes: '512x512',
-							type: 'image/png',
-						},
-						{
-							src: 'icons/pwa-512x512-maskable.png',
-							sizes: '512x512',
-							type: 'image/png',
-							purpose: 'maskable',
-						},
-					],
+					icons: buildIconArray(), // ← dynamicznie wygenerowana lista
 				},
 				workbox: {
-					// jakie pliki cache’ować (wszystkie HTML, JS, CSS, obrazy)
-					globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+					globPatterns: ['**/*.{js,css,html,png,svg,ico,webp,avif}'],
 				},
 			}),
 
-			// generuje HTML/EJS z data=meta
+			/* HTML + EJS */
 			createHtmlPlugin({ pages }),
 
-			// ESLint w dev i build
-			eslintPlugin({
-				// sprawdzaj wszystkie .js w src/
-				include: ['src/**/*.js'],
-				// wyłącz cache, żeby zawsze widzieć aktualne błędy
-				cache: false,
-			}),
+			/* ESLint */
+			eslint({ include: ['src/**/*.js'], cache: false }),
 
-			// sprite SVG z src/assets/icons
+			/* sprite SVG */
 			createSvgIconsPlugin({
 				iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
 				symbolId: 'icon-[name]',
 			}),
 
-			// Google Fonts pobierane lokalnie
+			/* Google Fonts lokalnie */
 			webfontDownload(),
 
-			// optymalizacja obrazów + tylko AVIF
+			/* optymalizacja obrazu */
 			viteImagemin({
 				mozjpeg: { quality: 90, progressive: true },
 				pngquant: { quality: [0.9, 0.95], speed: 4 },
@@ -135,25 +149,30 @@ export default defineConfig(({ mode }) => {
 				avif: { quality: 90 },
 			}),
 
-			// sitemap.xml + robots.txt
+			/* sitemap */
 			sitemap({
 				hostname: env.VITE_SITE_URL,
 				outDir: 'dist',
-				routes: [],
 				changefreq: 'weekly',
 				priority: 0.8,
 				readable: true,
 			}),
 
-			// legacy build dla starszych przeglądarek
-			legacy({
-				targets: ['defaults', 'not IE 11'],
-			}),
+			/* legacy build */
+			legacy({ targets: ['defaults', 'not IE 11'] }),
 		],
 
 		build: {
 			rollupOptions: {
 				input: inputEntries,
+				output: {
+					manualChunks: (id) => {
+						if (id.includes('node_modules')) return 'vendor';
+
+						// wspólne moduły użyte w ≥ 2 stronach
+						if (id.includes('/src/') && id.match(/\.js$/)) return 'commons';
+					},
+				},
 			},
 		},
 	};
