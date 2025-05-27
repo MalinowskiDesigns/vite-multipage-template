@@ -7,14 +7,15 @@ import FaviconsInject from 'vite-plugin-favicons-inject';
 import { VitePWA } from 'vite-plugin-pwa';
 import { createHtmlPlugin } from 'vite-plugin-html';
 import eslint from 'vite-plugin-eslint';
+import checker from 'vite-plugin-checker';
+import htmlMinifier from 'vite-plugin-html-minifier';
 import webfontDownload from 'vite-plugin-webfont-dl';
 import viteImagemin from 'vite-plugin-imagemin';
 import clean from 'vite-plugin-clean';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import sitemap from 'vite-plugin-sitemap';
 import legacy from '@vitejs/plugin-legacy';
-import htmlMinifier from 'vite-plugin-html-minifier';
-// import PluginCritical   from 'rollup-plugin-critical';   // ★ (na razie wyłączony)
+// import PluginCritical from 'rollup-plugin-critical';     // ← nadal wyłączony
 
 /* ───────── helpery ───────── */
 const pageDirs = () =>
@@ -36,11 +37,9 @@ const makeInput = (dirs) =>
 
 /* ───────── konfiguracja Vite ───────── */
 export default defineConfig(({ mode }) => {
-	// ładujemy tylko zmienne z prefiksem VITE_
 	const env = loadEnv(mode, process.cwd(), 'VITE_');
 	const dirs = pageDirs();
 
-	/* createHtmlPlugin – meta + ENV */
 	const pages = dirs.map((d) => {
 		const meta = JSON.parse(
 			fs.readFileSync(`src/pages/${d}/${d}.json`, 'utf-8')
@@ -48,8 +47,8 @@ export default defineConfig(({ mode }) => {
 		const slug = d === 'home' ? 'index' : d;
 		return {
 			entry: `src/pages/${d}/${d}.js`,
-			filename: `${slug}.html`, // zapis w dist/
-			template: `${slug}.html`, // szablon źródłowy w root
+			filename: `${slug}.html`,
+			template: `${slug}.html`,
 			injectOptions: {
 				data: { ...meta, ...env },
 				ejsOptions: {
@@ -77,9 +76,9 @@ export default defineConfig(({ mode }) => {
 					globPatterns: ['**/*.{html,js,css,png,svg,ico,jpg,webp,avif}'],
 				},
 			}),
+
 			createHtmlPlugin({ pages }),
 			htmlMinifier({
-				filter: /\.html?$/, // (domyślnie) – które pliki minifikować
 				minifierOptions: {
 					collapseWhitespace: true,
 					removeComments: true,
@@ -88,7 +87,19 @@ export default defineConfig(({ mode }) => {
 					sortAttributes: true,
 				},
 			}),
+
 			eslint({ include: ['src/**/*.js'] }),
+
+			/* ★ Checker pokazuje overlay z ESLint & Stylelint (v16) */
+			checker({
+				eslint: {
+					lintCommand: 'eslint "./src/**/*.{js,html,ejs}" --format stylish',
+				},
+				stylelint: {
+					lintCommand: 'stylelint "./src/**/*.{css,scss}"',
+				},
+			}),
+
 			createSvgIconsPlugin({
 				iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
 				symbolId: 'icon-[name]',
@@ -108,23 +119,7 @@ export default defineConfig(({ mode }) => {
 			}),
 			sitemap({ hostname: env.VITE_SITE_URL, readable: true }),
 			legacy({ targets: ['defaults', 'not IE 11'] }),
-
-			/* ★ Critical CSS – odkomentuj, gdy będziesz gotów do dalszych testów
-      (() => {
-        const crit = PluginCritical({
-          criticalUrl: '',
-          criticalBase: 'dist/',
-          criticalPages: dirs.map(d => ({
-            uri: d === 'home' ? '/' : `/${d}`,
-            template: d === 'home' ? 'index' : d,
-          })),
-          criticalConfig: { inline: true, width: 1300, height: 900 },
-        });
-        crit.enforce = 'post';
-        crit.apply   = 'build';
-        return crit;
-      })(),
-      */
+			// PluginCritical można dodać z powrotem w tym miejscu
 		],
 
 		build: {
