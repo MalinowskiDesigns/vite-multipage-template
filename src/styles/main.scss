@@ -7,16 +7,10 @@
 @use 'base/typography';
 @use 'base/utilities';
 @use 'components/buttons';
-@use 'components/cards';
-@use 'components/dropdown';
-@use 'components/forms';
-@use 'components/modals';
-@use 'components/navbar';
+@use 'components/nav';
 @use 'layout/container';
 @use 'layout/footer';
-@use 'layout/grid';
 @use 'layout/header';
 @use 'layout/sections';
-@use 'layout/sidebar';
 @use 'themes/light';
 @use 'themes/dark';
