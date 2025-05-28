@@ -1,3 +1,110 @@
-.example {
-	font-size: 0;
+/* -------------------------------------------------
+   base/_reset.scss – modern minimal reset
+   -------------------------------------------------- */
+@use 'design' as *; // tokeny kolorów / fontów
+
+/* 1. Box‑sizing i zerowanie marginesów/paddingów */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+/* 2. Listy bez domyślnych kropek/liczb */
+ul,
+ol {
+	list-style: none;
+}
+
+/* 3. Cytaty bez niespodziewanych cudzysłowów */
+blockquote,
+q {
+	quotes: none;
+}
+
+/* 4. Media responsywne */
+img,
+svg {
+	max-width: 100%;
+	display: block;
+}
+iframe {
+	border: 0;
+}
+
+/* 5. Formularze & buttony */
+button {
+	padding: 0;
+	border: none;
+	background: transparent;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+input,
+textarea,
+select {
+	font: inherit;
+	color: inherit;
+	border: none;
+	background: transparent;
+}
+
+textarea {
+	resize: vertical;
+}
+
+/* 6. Widoczny focus dla klawiatury */
+:focus-visible {
+	outline: 0.2rem solid $color-primary;
+	outline-offset: 0.2rem;
+}
+
+/* 7. Kolor zaznaczenia tekstu */
+::selection {
+	color: $color-white;
+	background: $color-primary;
+}
+::-moz-selection {
+	color: $color-white;
+	background: $color-primary;
+}
+
+/* 8. Tabele bez odstępów */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* 9. Pionowa linia hr w kolorze border‑token */
+hr {
+	height: 0.1rem;
+	border: none;
+	background: $color-border;
+}
+
+/* 10. Zapobieganie poziomowemu przewijaniu */
+html,
+body {
+	width: 100%;
+	overflow-x: hidden;
+}
+
+/* 11. Wyłączenie natywnego iOS wyglądu przycisków */
+button,
+input[type='submit'],
+input[type='reset'] {
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+
+video,
+canvas,
+audio {
+	max-width: 100%;
+	display: block;
 }

@@ -1,3 +1,110 @@
-.example {
-	font-size: 0;
+/* -------------------------------------------------
+   layout/_typography.scss – global typographic rules
+   -------------------------------------------------- */
+@use 'sass:math';
+@use '../base/design' as *; // lub inna ścieżka do tokenów
+/* -------------------------------------------------
+   Headings (H1‑H6)
+   -------------------------------------------------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: $font-heading;
+	font-weight: 600;
+	color: $color-text;
+	margin: 0 0 $gap-s 0;
+}
+
+h1 {
+	/* płynna skala 360‑1200 px → 3.6‑4.4 rem */
+	font-size: clamp(3.6rem, 2.6rem + 2vw, $fs-h1);
+	line-height: $lh-l;
+}
+
+h2 {
+	font-size: clamp(2.2rem, 1.7rem + 1vw, $fs-h2);
+	line-height: $lh-l;
+}
+
+h3 {
+	font-size: $fs-h3;
+	line-height: $lh-l;
+}
+
+h4 {
+	font-size: $fs-h4;
+	line-height: $lh-m;
+}
+
+h5 {
+	font-size: $fs-xs;
+	line-height: $lh-m;
+}
+
+h6 {
+	font-size: $fs-xxs;
+	line-height: $lh-m;
+}
+
+/* -- mobile tweaks ------------------------------------------------------ */
+@include respond(mobile, max) {
+	h3 {
+		font-size: 2rem;
+	}
+	h4 {
+		font-size: 1.6rem;
+	}
+}
+
+/* -------------------------------------------------
+   Body copy & lists
+   -------------------------------------------------- */
+p,
+ul,
+ol,
+dl,
+blockquote {
+	font-family: $font-main;
+	font-size: $fs-sm;
+	line-height: $lh-l;
+	color: $color-text;
+	margin: 0 0 $gap-s 0;
+}
+
+/* Lead paragraph (większy tekst wstępny) */
+.lead {
+	font-size: $fs-h4;
+	line-height: $lh-l;
+	font-weight: 400;
+}
+
+/* Lists ------------------------------------------------ */
+ul ul,
+ol ol {
+	margin-left: $gap-m;
+}
+li {
+	margin-bottom: math.div($gap-xs, 2);
+}
+
+/* Inline utilities ----------------------------------- */
+.u-text-center {
+	text-align: center !important;
+}
+.u-text-right {
+	text-align: right !important;
+}
+.u-text-uppercase {
+	text-transform: uppercase !important;
+}
+
+/* -------------------------------------------------
+   Expose base size/leading to CSS vars (for JS)
+   -------------------------------------------------- */
+:root {
+	--fs-base: #{$fs-sm};
+	--lh-base: #{$lh-l};
 }
