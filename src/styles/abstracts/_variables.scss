@@ -1,5 +1,4 @@
 @use 'sass:color';
-@use 'functions' as f;
 
 /* ---------- Kolory bazowe ---------- */
 $color-white: #fefbf9;
@@ -25,25 +24,27 @@ $color-border: rgba($color-black, 0.1);
 $font-main: 'Open Sans', sans-serif;
 $font-heading: 'Montserrat', sans-serif;
 
-$fs-xxs: f.rem(14);
-$fs-xs: f.rem(15);
-$fs-sm: f.rem(16);
-$fs-h4: f.rem(18);
-$fs-h3: f.rem(24);
-$fs-h2: f.rem(32);
-$fs-h1: f.rem(44);
+$fs-xxs: 1.2rem;
+$fs-xs: 1.5rem;
+$fs-sm: 1.6rem;
+$fs-h4: 1.8rem;
+$fs-h3: 2.4rem;
+$fs-h2: 3.2rem;
+$fs-h1: 4.4rem;
 
 $lh-s: 1.2;
 $lh-m: 1.4;
 $lh-l: 1.5;
 
 /* ---------- Przestrzenie & promienie ---------- */
-$gap-xs: f.rem(8);
-$gap-s: f.rem(16);
-$gap-m: f.rem(24);
-$gap-l: f.rem(32);
-$gap-xl: f.rem(48);
+$gap-xs: 0.6rem;
+$gap-s: 1.2rem;
+$gap-m: 1.6rem;
+$gap-l: 2.4rem;
+$gap-xl: 3.2rem;
+$gap-xxl: 4.8rem;
+$gap-xxxl: 6.4rem;
 
-$radius-s: f.rem(4);
-$radius-m: f.rem(8);
-$radius-l: f.rem(12);
+$radius-s: 0.4rem;
+$radius-m: 0.8rem;
+$radius-l: 1.2rem;
