@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="pl">
-	<%- include("_head.ejs") %>
+	<%- include("head.ejs") %>
 	<body>
-		<header class="header" id="header">
-			<!-- @include './components/nav.kit' -->
-		</header>
+		<header class="header" id="header"><%- include("nav.kit") %></header>
 		<main>
-			<h1>Witaj na stronie głównej</h1>
+			<h1><p><% if (true) { %>Strona główna!<% } %></p></h1>
 		</main>
-
-		<!-- @include './components/footer.kit' -->
-
-		<script type="module" src="/src/pages/home/home.js"></script>
+		<%- include("footer.kit") %>
 	</body>
 </html>

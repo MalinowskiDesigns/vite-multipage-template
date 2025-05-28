@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="pl">
-	<%- include("_head.ejs") %>
+	<%- include("head.ejs") %>
 	<body>
-		<h1>Kontakt</h1>
-		<script type="module" src="/src/pages/home/home.js"></script>
+		<header class="header" id="header"><%- include("nav.kit") %></header>
+		<main>
+			<h1><p><% if (true) { %>Kontakt!<% } %></p></h1>
+		</main>
+		<%- include("footer.kit") %>
 	</body>
 </html>
