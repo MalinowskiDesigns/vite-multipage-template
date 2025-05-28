@@ -53,9 +53,7 @@ export default defineConfig(({ mode }) => {
 
 	/* lista stron dla vite-plugin-html */
 	const pages = dirs.map((d) => {
-		const meta = JSON.parse(
-			fs.readFileSync(`src/pages/${d}/${d}.json`, 'utf-8')
-		);
+		const meta = JSON.parse(fs.readFileSync(`src/pages/${d}/${d}.json`, 'utf-8'));
 		const slug = d === 'home' ? 'index' : d;
 		return {
 			entry: `src/pages/${d}/${d}.js`,
@@ -134,11 +132,7 @@ export default defineConfig(({ mode }) => {
 						},
 					],
 				},
-				includeAssets: [
-					'browserconfig.xml',
-					'yandex-browser-manifest.json',
-					'og_image.jpg',
-				],
+				includeAssets: ['browserconfig.xml', 'yandex-browser-manifest.json', 'og_image.jpg'],
 			}),
 			mkcert(),
 			FullReload(['src/templates/**/*', 'src/pages/**/*.json']),
@@ -165,6 +159,8 @@ export default defineConfig(({ mode }) => {
 				enableBuild: false,
 				eslint: false,
 				stylelint: {
+					fix: true,
+					include: ['src/**/*.{css,scss}'],
 					lintCommand: 'stylelint "./src/**/*.{css,scss}"',
 					dev: { logLevel: ['error', 'warning'] },
 				},
@@ -214,8 +210,7 @@ export default defineConfig(({ mode }) => {
 
 					return html.replace(
 						IMG_RE,
-						(_, pre, srcAttr, path) =>
-							`${pre}${srcAttr}${path}?w=${brk}&format=avif&as=srcset"`
+						(_, pre, srcAttr, path) => `${pre}${srcAttr}${path}?w=${brk}&format=avif&as=srcset"`
 					);
 				},
 
@@ -224,14 +219,9 @@ export default defineConfig(({ mode }) => {
 					if (!/\.css$/i.test(id)) return;
 
 					// pomijaj już zoptymalizowane url(... format(…))
-					const CSS_RE =
-						/url\((['"]?)([^'")]+?\.(?:jpe?g|png))\1\)(?!\s*format)/gi;
+					const CSS_RE = /url\((['"]?)([^'")]+?\.(?:jpe?g|png))\1\)(?!\s*format)/gi;
 
-					return code.replace(
-						CSS_RE,
-						(_, q, path) =>
-							`url(${q}${path}?w=${brk}&format=avif&as=srcset${q})`
-					);
+					return code.replace(CSS_RE, (_, q, path) => `url(${q}${path}?w=${brk}&format=avif&as=srcset${q})`);
 				},
 			},
 

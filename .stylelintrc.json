@@ -1,10 +1,24 @@
 {
 	"extends": ["stylelint-config-standard-scss"],
-	"customSyntax": "postcss-scss" ,
+	"customSyntax": "postcss-scss",
+	"plugins": ["stylelint-scss"],
 	"rules": {
+		"at-rule-no-unknown": null,
+		"scss/at-rule-no-unknown": [
+			true,
+			{
+				"ignoreAtRules": ["use", "forward", "mixin", "include", "function", "return"]
+			}
+		],
+		"rule-empty-line-before": null,
+		"shorthand-property-no-redundant-values": null,
+		"at-rule-empty-line-before": null,
+		"comment-empty-line-before": null,
+		"custom-property-empty-line-before": null,
+		"scss/dollar-variable-empty-line-before": null,
+		"color-named": ["never", { "ignore": ["inside-function"] }],
 		"declaration-property-value-disallowed-list": {
 			"outline": ["none", "0"]
-		},
-		"color-named": ["never", { "ignore": ["inside-function"] }]
+		}
 	}
 }

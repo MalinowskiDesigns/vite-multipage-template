@@ -1,31 +1,33 @@
 // Flexbox center
 @mixin flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 // Aspect-ratio (fallbacky dla starszych przeglądarek)
 @mixin aspect-ratio($w, $h) {
-  position: relative;
-  &::before {
-    content: '';
-    display: block;
-    padding-top: ($h / $w) * 100%;
-  }
-  & > * {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-  }
+	position: relative;
+	&::before {
+		content: '';
+		display: block;
+		padding-top: ($h / $w) * 100%;
+	}
+	& > * {
+		position: absolute;
+		inset: 0;
+	}
 }
 
 // prefers-reduced-motion
 @mixin reduce-motion {
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation: none !important;
-      transition: none !important;
-      scroll-behavior: auto !important;
-    }
-  }
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			transition: none !important;
+			animation: none !important;
+			scroll-behavior: auto !important;
+		}
+	}
 }

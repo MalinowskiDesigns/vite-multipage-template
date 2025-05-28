@@ -24,16 +24,17 @@ html:focus-within {
 }
 body {
 	min-height: 100vh;
-	text-rendering: optimizeSpeed;
 	line-height: 1.5;
+	text-rendering: optimize-speed;
 }
+
 a:not([class]) {
 	text-decoration-skip-ink: auto;
 }
 img,
 picture {
-	max-width: 100%;
 	display: block;
+	max-width: 100%;
 }
 input,
 button,
@@ -48,9 +49,9 @@ select {
 	*,
 	*::before,
 	*::after {
+		transition-duration: 0.01ms !important;
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
 }

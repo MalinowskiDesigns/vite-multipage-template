@@ -15,41 +15,41 @@ h3,
 h4,
 h5,
 h6 {
+	margin: 0 0 $gap-s;
 	font-family: $font-heading;
 	font-weight: 600;
 	color: $color-text;
-	margin: 0 0 $gap-s 0;
 }
 
 h1 {
+	line-height: $lh-l;
 	/* płynna skala 360-1200 px → 3.6-4.4 rem */
 	font-size: clamp(3.6rem, 2.6rem + 2vw, $fs-h1);
-	line-height: $lh-l;
 }
 
 h2 {
-	font-size: clamp(2.2rem, 1.7rem + 1vw, $fs-h2);
 	line-height: $lh-l;
+	font-size: clamp(2.2rem, 1.7rem + 1vw, $fs-h2);
 }
 
 h3 {
-	font-size: $fs-h3;
 	line-height: $lh-l;
+	font-size: $fs-h3;
 }
 
 h4 {
-	font-size: $fs-h4;
 	line-height: $lh-m;
+	font-size: $fs-h4;
 }
 
 h5 {
-	font-size: $fs-xs;
 	line-height: $lh-m;
+	font-size: $fs-xs;
 }
 
 h6 {
-	font-size: $fs-xxs;
 	line-height: $lh-m;
+	font-size: $fs-xxs;
 }
 
 /* -- mobile tweaks ------------------------------------------------------ */
@@ -70,18 +70,18 @@ ul,
 ol,
 dl,
 blockquote {
-	font-family: $font-main;
-	font-size: $fs-sm;
-	line-height: $lh-l;
-	color: $color-text;
 	margin: 0 0 $gap-s 0;
+	font-family: $font-main;
+	line-height: $lh-l;
+	font-size: $fs-sm;
+	color: $color-text;
 }
 
 /* Lead paragraph (większy tekst wstępny) */
 .lead {
-	font-size: $fs-h4;
-	line-height: $lh-l;
 	font-weight: 400;
+	line-height: $lh-l;
+	font-size: $fs-h4;
 }
 
 /* Lists ------------------------------------------------ */

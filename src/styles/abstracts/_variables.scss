@@ -5,14 +5,14 @@
 $color-white: #fefbf9;
 $color-black: #363940;
 
-$color-blue-500: #387ABC;
+$color-blue-500: #387abc;
 $color-blue-600: color.adjust($color-blue-500, $lightness: -8%);
 $color-blue-100: color.adjust($color-blue-500, $lightness: 42%);
 
-$color-gray-100: #F6F7FA;
-$color-gray-200: #E1E5EE;
-$color-gray-300: #CAD1E1;
-$color-gray-400: #95A1BB;
+$color-gray-100: #f6f7fa;
+$color-gray-200: #e1e5ee;
+$color-gray-300: #cad1e1;
+$color-gray-400: #95a1bb;
 
 /* ---------- Kolory semantyczne ---------- */
 $color-primary: $color-blue-500;

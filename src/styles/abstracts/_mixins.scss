@@ -4,8 +4,8 @@
 // Flexbox center
 @mixin flex-center {
 	display: flex;
-	justify-content: center;
 	align-items: center;
+	justify-content: center;
 }
 
 // Aspect-ratio (fallbacky dla starszych przeglądarek)
@@ -18,10 +18,7 @@
 	}
 	& > * {
 		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		inset: 0;
 	}
 }
 
@@ -31,8 +28,8 @@
 		*,
 		*::before,
 		*::after {
-			animation: none !important;
 			transition: none !important;
+			animation: none !important;
 			scroll-behavior: auto !important;
 		}
 	}
