@@ -1,0 +1,55 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/breakpoints' as *;
+
+/* ----------------------------------------
+   Eksport tokenów jako CSS Custom Properties
+   ---------------------------------------- */
+:root {
+	/* colours */
+	--color-primary: #{$color-primary};
+	--color-primary-hover: #{$color-primary-hover};
+	--color-bg: #{$color-bg};
+	--color-text: #{$color-text};
+	--color-border: #{$color-border};
+
+	/* spacing & radius */
+	--gap-xs: #{$gap-xs};
+	--gap-s: #{$gap-s};
+	--gap-normal: #{$gap-m};
+	--gap-l: #{$gap-l};
+	--gap-xl: #{$gap-xl};
+
+	--radius-s: #{$radius-s};
+	--radius-m: #{$radius-m};
+	--radius-l: #{$radius-l};
+
+	/* typography */
+	--fs-xxs: #{$fs-xxs};
+	--fs-xs: #{$fs-xs};
+	--fs-sm: #{$fs-sm};
+	--fs-h4: #{$fs-h4};
+	--fs-h3: #{$fs-h3};
+	--fs-h2: #{$fs-h2};
+	--fs-h1: #{$fs-h1};
+
+	--lh-s: #{$lh-s};
+	--lh-m: #{$lh-m};
+	--lh-l: #{$lh-l};
+}
+
+/* --gap-normal skalowane wg viewportu */
+@media #{$mobile} {
+	:root {
+		--gap-normal: #{$gap-s};
+	}
+}
+@media #{$tablet} {
+	:root {
+		--gap-normal: #{$gap-m};
+	}
+}
+@media #{$desktop} {
+	:root {
+		--gap-normal: #{$gap-l};
+	}
+}

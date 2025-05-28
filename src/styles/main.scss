@@ -1,16 +1,31 @@
+/* ========= 1. Abstrakcje ========= */
 @use 'abstracts/functions';
+@use 'abstracts/variables' as *; // gwiazdka eksportuje zmienne wprost
 @use 'abstracts/mixins';
-@use 'abstracts/placeholders';
-@use 'abstracts/variables';
-@use 'base/base';
-@use 'base/reset';
+
+/* ========= 2. Vendor (jeśli używasz) ========= */
+@use 'vendors/reset';
+
+/* ========= 3. Baza ========= */
+@use 'base/base'; // body, img …
+@use 'base/css-vars'; // nasz nowy plik
 @use 'base/typography';
 @use 'base/utilities';
+
+/* ========= 4. Layout ========= */
+@use 'layout/container';
+@use 'layout/header';
+@use 'layout/footer';
+@use 'layout/sections';
+
+/* ========= 5. Komponenty ========= */
 @use 'components/buttons';
 @use 'components/nav';
-@use 'layout/container';
-@use 'layout/footer';
-@use 'layout/header';
-@use 'layout/sections';
-@use 'themes/light';
-@use 'themes/dark';
+
+/* ========= 6. Strony (opcjonalnie) ========= */
+// @use 'pages/index';
+// @use 'pages/contact';
+
+/* ========= 7. Motywy (na samym końcu, by mogły nadpisać) ========= */
+// @use 'themes/dark';
+// @use 'themes/light'; // jeśli potrzebne

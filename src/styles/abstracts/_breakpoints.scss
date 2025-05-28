@@ -1,0 +1,47 @@
+/* =======================================
+   Breakpoints helpers  |  abstracts/_breakpoints.scss
+   ======================================= */
+
+@use 'sass:map';
+
+/* 1. Centralna mapa przerwań  (mobile-first, w rem-ach) */
+$breakpoints: (
+	mobile: 31.9rem,
+	// 319 px
+	tablet: 74.3rem,
+	// 743 px
+	desktop: 120rem // 1200 px,,
+) !default;
+
+/* 2. Syntactic sugar → funkcja bp() */
+@function bp($name) {
+	@if map.has-key($breakpoints, $name) {
+		@return map.get($breakpoints, $name);
+	}
+	@error 'Nieznany breakpoint: `#{$name}`';
+}
+
+/* 3. Mixin respond()
+   @include respond(tablet) { … }  => min-width
+   @include respond(mobile, max) { … } => max-width   */
+@mixin respond($point, $type: min) {
+	$value: bp($point);
+
+	@if $type == max {
+		@media (max-width: #{$value}) {
+			@content;
+		}
+	} @else if $type == min {
+		@media (min-width: #{$value}) {
+			@content;
+		}
+	} @else {
+		@error 'Drugi parametr musi być "min" lub "max"';
+	}
+}
+
+/* 4. Gotowe media-query stringi – wygodne, gdy potrzebujesz inline */
+$hover: '(hover: hover) and (pointer: fine)';
+$mobile: '(min-width: #{bp(mobile)}) and (max-width: #{bp(tablet) - 0.1rem})';
+$tablet: '(min-width: #{bp(tablet)}) and (max-width: #{bp(desktop) - 0.1rem})';
+$desktop: '(min-width: #{bp(desktop)})';

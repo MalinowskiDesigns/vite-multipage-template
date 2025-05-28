@@ -1,3 +1,49 @@
-.example {
-	font-size: 0;
-}
+@use 'sass:color';
+@use 'functions' as f;
+
+/* ---------- Kolory bazowe ---------- */
+$color-white: #fefbf9;
+$color-black: #363940;
+
+$color-blue-500: #387ABC;
+$color-blue-600: color.adjust($color-blue-500, $lightness: -8%);
+$color-blue-100: color.adjust($color-blue-500, $lightness: 42%);
+
+$color-gray-100: #F6F7FA;
+$color-gray-200: #E1E5EE;
+$color-gray-300: #CAD1E1;
+$color-gray-400: #95A1BB;
+
+/* ---------- Kolory semantyczne ---------- */
+$color-primary: $color-blue-500;
+$color-primary-hover: $color-blue-600;
+$color-bg: $color-white;
+$color-text: $color-black;
+$color-border: rgba($color-black, 0.1);
+
+/* ---------- Typografia ---------- */
+$font-main: 'Open Sans', sans-serif;
+$font-heading: 'Montserrat', sans-serif;
+
+$fs-xxs: f.rem(14);
+$fs-xs: f.rem(15);
+$fs-sm: f.rem(16);
+$fs-h4: f.rem(18);
+$fs-h3: f.rem(24);
+$fs-h2: f.rem(32);
+$fs-h1: f.rem(44);
+
+$lh-s: 1.2;
+$lh-m: 1.4;
+$lh-l: 1.5;
+
+/* ---------- Przestrzenie & promienie ---------- */
+$gap-xs: f.rem(8);
+$gap-s: f.rem(16);
+$gap-m: f.rem(24);
+$gap-l: f.rem(32);
+$gap-xl: f.rem(48);
+
+$radius-s: f.rem(4);
+$radius-m: f.rem(8);
+$radius-l: f.rem(12);

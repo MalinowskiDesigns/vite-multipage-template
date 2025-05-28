@@ -1,4 +1,5 @@
-@use '../base/design' as *; // <-- dostęp do kolorów
+@use 'css-vars' as *; // <-- dostęp do kolorów
+@use '../abstracts/variables' as *; // <-- dostęp do kolorów
 
 /* --- elementarny reset --- */
 *,
